@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './Grid.css';
 import { useAppDispatch, useRootSelector } from './store/Hooks';
-import { boardHeight, boardWidth } from './store/InitialItemBoard';
+import { boardHeight, boardWidth } from './model/InitialItemBoard';
 import { Cell } from './Cell';
 import { connectToFluid, setCell } from './store/Reducers';
 

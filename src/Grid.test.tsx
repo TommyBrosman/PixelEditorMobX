@@ -5,10 +5,10 @@ import { assert, expect } from "chai";
 import "@testing-library/dom"
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import Grid from "./Grid";
-import { boardHeight, boardWidth, initialItemBoard } from "./store/InitialItemBoard";
+import { boardHeight, boardWidth, initialItemBoard } from "./model/InitialItemBoard";
 import { Provider } from "react-redux";
 import { setupStore } from "./store/Store";
-import type { PixelEditorSchema, SharedTreeConnection } from "./store/Model";
+import type { PixelEditorSchema, SharedTreeConnection } from "./model/Model";
 import type { TreeView } from "fluid-framework";
 import { initialAppState } from "./store/State";
 

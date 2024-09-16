@@ -1,6 +1,6 @@
 import { Tree } from "fluid-framework";
 import { asyncThunkCreator, buildCreateSlice, type PayloadAction } from '@reduxjs/toolkit'
-import { start, type SharedTreeConnection } from "./Model";
+import { start, type SharedTreeConnection } from "../model/Model";
 import { type AppState, initialAppState } from "./State";
 
 // Use the version of createSlice that supports async thunks

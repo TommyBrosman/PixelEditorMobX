@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import type { SharedTreeConnection } from "./Model";
+import type { SharedTreeConnection } from "../model/Model";
 import { appReducer } from "./Reducers";
 
 const rootReducer = combineReducers({ app: appReducer });

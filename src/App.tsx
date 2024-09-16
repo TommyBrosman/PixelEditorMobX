@@ -1,18 +1,18 @@
 import React from 'react';
 import './App.css';
 import Grid from './Grid';
-import { setupStore } from './store/Store';
-import { Provider } from 'react-redux';
+import { StoreContext } from './store2/Hooks';
+import { setupStore } from './store2/Store';
 
 function App() {
 	return (
-		<Provider store={setupStore()}>
+		<StoreContext.Provider value={setupStore()}>
 			<div className="App">
 				<header className="App-header">
 					<Grid />
 				</header>
 			</div>
-		</Provider>
+		</StoreContext.Provider>
 	);
 }
 

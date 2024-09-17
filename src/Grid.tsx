@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './Grid.css';
 import { boardHeight, boardWidth } from './model/InitialItemBoard';
 import { Cell } from './Cell';
@@ -7,14 +7,7 @@ import { useAppStore } from './store2/Hooks';
 
 export const Grid = observer(() => {
 	const store = useAppStore();
-	const { itemBoard, isLoaded } = store;
-
-	// Only connect once
-	useEffect(() => {
-		if (!isLoaded) {
-			store.connectToFluid();
-		}
-	}, [store, isLoaded]);
+	const { itemBoard } = store;
 
 	// Populate the board
 	const items = itemBoard.length > 0

@@ -20,7 +20,7 @@ import { initialAppState } from "./store/State";
 const waitForFluidConnection = async (sharedTreeConnection: SharedTreeConnection) =>
 	waitFor(() => {
 		expect(sharedTreeConnection.pixelEditorTreeView, "Ensure that tinylicious is running.").to.not.be.undefined;
-	});
+	}, { timeout: 5000 });
 
 /**
  * Count the number of cells stored in the backing Fluid Tree.
@@ -41,7 +41,7 @@ describe("Tests for Grid", () => {
 	 * Visual test for the Grid component. Ignores Fluid and tells the app that the board is already loaded.
 	 */
 	it("Displays an 8x8 board", async (): Promise<void> => {
-		const store = setupStore({ itemBoard: initialItemBoard, isLoaded: true });
+		const store = await setupStore({ itemBoard: initialItemBoard, isLoaded: true });
 		const { container } = render(
 			<StoreContext.Provider value={store}>
 				<Grid/>
@@ -56,7 +56,7 @@ describe("Tests for Grid", () => {
 	 */
 	it("Toggles a cell", async (): Promise<void> => {
 		const sharedTreeConnection: SharedTreeConnection = { pixelEditorTreeView: undefined };
-		const store = setupStore(
+		const store = await setupStore(
 			initialAppState,
 			sharedTreeConnection);
 		const { container } = render(
@@ -81,7 +81,7 @@ describe("Tests for Grid", () => {
 	 */
 	it("Toggling a cell in the UI sets the corresponding cell in the backing Fluid Tree DDS", async (): Promise<void> => {
 		const sharedTreeConnection: SharedTreeConnection = { pixelEditorTreeView: undefined };
-		const store = setupStore(
+		const store = await setupStore(
 			initialAppState,
 			sharedTreeConnection);
 		const { container } = render(

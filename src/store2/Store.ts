@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx"
+import { makeAutoObservable, runInAction } from "mobx"
 import { type SharedTreeConnection, start } from "../model/Model";
 import { Tree } from "fluid-framework";
 import type { AppState } from "../store/State";
@@ -14,8 +14,10 @@ export class AppStore {
 			this.itemBoard = preloadedState.itemBoard;
 		}
 
-		this.sharedTreeConnection = sharedTreeConnection ?? { pixelEditorTreeView: undefined };
+		// Call before setting the connection so that it doesn't get overwritten by a Proxy object
 		makeAutoObservable(this);
+
+		this.sharedTreeConnection = sharedTreeConnection ?? { pixelEditorTreeView: undefined };
 	}
 
 	public setCell(x: number, y: number, value: number): void {
@@ -40,9 +42,8 @@ export class AppStore {
  * @param sharedTreeConnection Contains the Shared Tree TreeView when connected.
  * @returns The composed store.
  */
-export function setupStore(preloadedState?: AppState, sharedTreeConnection?: SharedTreeConnection): AppStore {
-	return new AppStore(preloadedState, sharedTreeConnection);
-}
-function runInAction(arg0: () => void) {
-	throw new Error("Function not implemented.");
+export async function setupStore(preloadedState?: AppState, sharedTreeConnection?: SharedTreeConnection): Promise<AppStore> {
+	const store = new AppStore(preloadedState, sharedTreeConnection);
+	await store.connectToFluid();
+	return store;
 }

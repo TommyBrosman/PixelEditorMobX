@@ -3,15 +3,21 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { setupStore } from './store2/Store';
+import { StoreContext } from './store2/Hooks';
 
 const root = ReactDOM.createRoot(
 	document.getElementById('root') as HTMLElement
 );
 
-root.render(
-	<React.StrictMode>
-		<App />
-	</React.StrictMode>
+setupStore().then((store) =>
+	root.render(
+		<StoreContext.Provider value={store}>
+			<React.StrictMode>
+				<App />
+			</React.StrictMode>
+		</StoreContext.Provider>
+	)
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -6,10 +6,10 @@ import "@testing-library/dom"
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import Grid from "./Grid";
 import { boardHeight, boardWidth, initialItemBoard } from "./model/InitialItemBoard";
-import { Provider } from "react-redux";
-import { setupStore } from "./store/Store";
+import { setupStore } from "./store2/Store";
 import type { PixelEditorSchema, SharedTreeConnection } from "./model/Model";
 import type { TreeView } from "fluid-framework";
+import { StoreContext } from "./store2/Hooks";
 import { initialAppState } from "./store/State";
 
 /**
@@ -41,11 +41,11 @@ describe("Tests for Grid", () => {
 	 * Visual test for the Grid component. Ignores Fluid and tells the app that the board is already loaded.
 	 */
 	it("Displays an 8x8 board", async (): Promise<void> => {
-		const store = setupStore({ app: { isLoaded: true, itemBoard: initialItemBoard } });
+		const store = setupStore({ itemBoard: initialItemBoard, isLoaded: true });
 		const { container } = render(
-			<Provider store={store}>
+			<StoreContext.Provider value={store}>
 				<Grid/>
-			</Provider>);
+			</StoreContext.Provider>);
 
 		const cells = Array.from(container.querySelectorAll('.grid-item-black,.grid-item-white'));
 		expect(cells).length(boardWidth * boardHeight);
@@ -57,12 +57,12 @@ describe("Tests for Grid", () => {
 	it("Toggles a cell", async (): Promise<void> => {
 		const sharedTreeConnection: SharedTreeConnection = { pixelEditorTreeView: undefined };
 		const store = setupStore(
-			{ app: initialAppState },
+			initialAppState,
 			sharedTreeConnection);
 		const { container } = render(
-			<Provider store={store}>
+			<StoreContext.Provider value={store}>
 				<Grid/>
-			</Provider>);
+			</StoreContext.Provider>);
 		await waitForFluidConnection(sharedTreeConnection);
 
 		const blackCellsBefore = Array.from(container.querySelectorAll('.grid-item-black'));
@@ -82,12 +82,12 @@ describe("Tests for Grid", () => {
 	it("Toggling a cell in the UI sets the corresponding cell in the backing Fluid Tree DDS", async (): Promise<void> => {
 		const sharedTreeConnection: SharedTreeConnection = { pixelEditorTreeView: undefined };
 		const store = setupStore(
-			{ app: initialAppState },
+			initialAppState,
 			sharedTreeConnection);
 		const { container } = render(
-			<Provider store={store}>
+			<StoreContext.Provider value={store}>
 				<Grid/>
-			</Provider>);
+			</StoreContext.Provider>);
 		await waitForFluidConnection(sharedTreeConnection);
 
 		const blackCellsBefore = Array.from(container.querySelectorAll('.grid-item-black'));

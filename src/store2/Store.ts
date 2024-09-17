@@ -1,32 +1,36 @@
 import { makeAutoObservable } from "mobx"
-import { SharedTreeConnection, start } from "../model/Model";
+import { type SharedTreeConnection, start } from "../model/Model";
 import { Tree } from "fluid-framework";
+import type { AppState } from "../store/State";
 
 export class AppStore {
-	// TODO: This might be unnecessary now
-	public isLoaded: boolean = false;
+	public isLoaded = false;
 	public itemBoard: number[][] = [];
 	private readonly sharedTreeConnection: SharedTreeConnection;
 
-	public constructor(sharedTreeConnection?: SharedTreeConnection) {
-		makeAutoObservable(this);
+	public constructor(preloadedState?: AppState, sharedTreeConnection?: SharedTreeConnection) {
+		if (preloadedState !== undefined) {
+			this.isLoaded = preloadedState.isLoaded;
+			this.itemBoard = preloadedState.itemBoard;
+		}
 
 		this.sharedTreeConnection = sharedTreeConnection ?? { pixelEditorTreeView: undefined };
-
-		// TODO: Move this out of the ctor and/or inject the PixelEditorTreeView factory
-		this.initialLoad();
+		makeAutoObservable(this);
 	}
 
 	public setCell(x: number, y: number, value: number): void {
 		this.sharedTreeConnection.pixelEditorTreeView?.root.setCell(x, y, value);
 	}
 
-	private initialLoad(): void {
-		start().then((pixelEditorTreeView) => {
-			Tree.on(pixelEditorTreeView.root, "treeChanged", () => {
-				this.itemBoard = pixelEditorTreeView.root.getBoardAsNestedArray();
-				this.isLoaded = true;
-			});
+	public async connectToFluid(): Promise<void> {
+		const pixelEditorTreeView = await start();
+		Tree.on(pixelEditorTreeView.root, "treeChanged", () => {
+			this.itemBoard = pixelEditorTreeView.root.getBoardAsNestedArray();
+		});
+
+		runInAction(() => {
+			this.isLoaded = true;
+			this.sharedTreeConnection.pixelEditorTreeView = pixelEditorTreeView;
 		});
 	}
 }
@@ -36,6 +40,9 @@ export class AppStore {
  * @param sharedTreeConnection Contains the Shared Tree TreeView when connected.
  * @returns The composed store.
  */
-export function setupStore(sharedTreeConnection?: SharedTreeConnection): AppStore {
-	return new AppStore(sharedTreeConnection);
+export function setupStore(preloadedState?: AppState, sharedTreeConnection?: SharedTreeConnection): AppStore {
+	return new AppStore(preloadedState, sharedTreeConnection);
+}
+function runInAction(arg0: () => void) {
+	throw new Error("Function not implemented.");
 }

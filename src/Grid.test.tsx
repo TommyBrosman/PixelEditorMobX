@@ -10,7 +10,6 @@ import { setupStore } from "./store2/Store";
 import type { PixelEditorSchema, SharedTreeConnection } from "./model/Model";
 import type { TreeView } from "fluid-framework";
 import { StoreContext } from "./store2/Hooks";
-import { initialAppState } from "./store/State";
 
 /**
  * Wait for the thunk that connects to Fluid.
@@ -20,7 +19,7 @@ import { initialAppState } from "./store/State";
 const waitForFluidConnection = async (sharedTreeConnection: SharedTreeConnection) =>
 	waitFor(() => {
 		expect(sharedTreeConnection.pixelEditorTreeView, "Ensure that tinylicious is running.").to.not.be.undefined;
-	}, { timeout: 5000 });
+	});
 
 /**
  * Count the number of cells stored in the backing Fluid Tree.
@@ -57,7 +56,7 @@ describe("Tests for Grid", () => {
 	it("Toggles a cell", async (): Promise<void> => {
 		const sharedTreeConnection: SharedTreeConnection = { pixelEditorTreeView: undefined };
 		const store = await setupStore(
-			initialAppState,
+			undefined,
 			sharedTreeConnection);
 		const { container } = render(
 			<StoreContext.Provider value={store}>
@@ -82,7 +81,7 @@ describe("Tests for Grid", () => {
 	it("Toggling a cell in the UI sets the corresponding cell in the backing Fluid Tree DDS", async (): Promise<void> => {
 		const sharedTreeConnection: SharedTreeConnection = { pixelEditorTreeView: undefined };
 		const store = await setupStore(
-			initialAppState,
+			undefined,
 			sharedTreeConnection);
 		const { container } = render(
 			<StoreContext.Provider value={store}>

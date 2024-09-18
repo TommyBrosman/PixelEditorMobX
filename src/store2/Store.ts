@@ -24,26 +24,43 @@ export class AppStore {
 		this.sharedTreeConnection.pixelEditorTreeView?.root.setCell(x, y, value);
 	}
 
+	/**
+	 * Async action. Connects to the Fluid session. Steps:
+	 * - Join or create a session
+	 * - Wire up events that dispatch reducers when the Shared Tree instance changes (either due to local or remote edits)
+	 */
 	public async connectToFluid(): Promise<void> {
 		const pixelEditorTreeView = await start();
 		Tree.on(pixelEditorTreeView.root, "treeChanged", () => {
-			this.itemBoard = pixelEditorTreeView.root.getBoardAsNestedArray();
+			runInAction(() => {
+				this.itemBoard = pixelEditorTreeView.root.getBoardAsNestedArray();
+			});
 		});
 
 		runInAction(() => {
-			this.isLoaded = true;
 			this.sharedTreeConnection.pixelEditorTreeView = pixelEditorTreeView;
+
+			// Dispatch the first change notification. The board was loaded before the event was wired up via Tree, so we need
+			// to dispatch it manually.
+			this.itemBoard = pixelEditorTreeView.root.getBoardAsNestedArray();
+			this.isLoaded = true;
 		});
 	}
 }
 
 /**
  * Facade method to setting up the store.
- * @param sharedTreeConnection Contains the Shared Tree TreeView when connected.
+ * @param preloadedState Preloaded state for testing.
+ * @param sharedTreeConnection Contains the Shared Tree TreeView when connected. Used in tests.
  * @returns The composed store.
  */
 export async function setupStore(preloadedState?: AppState, sharedTreeConnection?: SharedTreeConnection): Promise<AppStore> {
 	const store = new AppStore(preloadedState, sharedTreeConnection);
-	await store.connectToFluid();
+
+	// Don't connect to Fluid if preloadedState is specified
+	if (preloadedState === undefined) {
+		await store.connectToFluid();
+	}
+
 	return store;
 }

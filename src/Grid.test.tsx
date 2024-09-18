@@ -6,10 +6,10 @@ import "@testing-library/dom"
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import Grid from "./Grid";
 import { boardHeight, boardWidth, initialItemBoard } from "./model/InitialItemBoard";
-import { setupStore } from "./store2/Store";
+import { setupStore } from "./store/Store";
 import type { PixelEditorSchema, SharedTreeConnection } from "./model/Model";
 import type { TreeView } from "fluid-framework";
-import { StoreContext } from "./store2/Hooks";
+import { StoreContext } from "./store/Hooks";
 
 /**
  * Wait for the thunk that connects to Fluid.

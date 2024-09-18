@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { setupStore } from './store2/Store';
-import { StoreContext } from './store2/Hooks';
+import { setupStore } from './store/Store';
+import { StoreContext } from './store/Hooks';
 
 const root = ReactDOM.createRoot(
 	document.getElementById('root') as HTMLElement

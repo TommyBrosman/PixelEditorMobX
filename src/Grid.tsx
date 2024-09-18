@@ -3,7 +3,7 @@ import './Grid.css';
 import { boardHeight, boardWidth } from './model/InitialItemBoard';
 import { Cell } from './Cell';
 import { observer } from "mobx-react-lite";
-import { useAppStore } from './store2/Hooks';
+import { useAppStore } from './store/Hooks';
 
 export const Grid = observer(() => {
 	const store = useAppStore();

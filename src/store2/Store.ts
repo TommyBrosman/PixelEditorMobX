@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx"
 import { type SharedTreeConnection, start } from "../model/Model";
 import { Tree } from "fluid-framework";
-import type { AppState } from "../store/State";
+import type { AppState } from "../State";
 
 export class AppStore {
 	public isLoaded = false;

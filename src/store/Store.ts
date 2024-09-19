@@ -1,14 +1,14 @@
 import { makeAutoObservable, runInAction } from "mobx"
-import { type SharedTreeConnection, start } from "../model/Model";
+import { type PixelEditorSchema, type SharedTreeConnection, start } from "../model/Model";
 import { Tree } from "fluid-framework";
 import type { AppState } from "../State";
 
 export class AppStore {
 	public isLoaded = false;
 	public itemBoard: number[][] = [];
-	private readonly sharedTreeConnection: SharedTreeConnection;
+	private readonly sharedTreeConnection: SharedTreeConnection<typeof PixelEditorSchema>;
 
-	public constructor(preloadedState?: AppState, sharedTreeConnection?: SharedTreeConnection) {
+	public constructor(preloadedState?: AppState, sharedTreeConnection?: SharedTreeConnection<typeof PixelEditorSchema>) {
 		if (preloadedState !== undefined) {
 			this.isLoaded = preloadedState.isLoaded;
 			this.itemBoard = preloadedState.itemBoard;
@@ -17,11 +17,11 @@ export class AppStore {
 		// Call before setting the connection so that it doesn't get overwritten by a Proxy object
 		makeAutoObservable(this);
 
-		this.sharedTreeConnection = sharedTreeConnection ?? { pixelEditorTreeView: undefined };
+		this.sharedTreeConnection = sharedTreeConnection ?? { treeView: undefined };
 	}
 
 	public setCell(x: number, y: number, value: number): void {
-		this.sharedTreeConnection.pixelEditorTreeView?.root.setCell(x, y, value);
+		this.sharedTreeConnection.treeView?.root.setCell(x, y, value);
 	}
 
 	/**
@@ -38,7 +38,7 @@ export class AppStore {
 		});
 
 		runInAction(() => {
-			this.sharedTreeConnection.pixelEditorTreeView = pixelEditorTreeView;
+			this.sharedTreeConnection.treeView = pixelEditorTreeView;
 
 			// Dispatch the first change notification. The board was loaded before the event was wired up via Tree, so we need
 			// to dispatch it manually.
@@ -54,7 +54,7 @@ export class AppStore {
  * @param sharedTreeConnection Contains the Shared Tree TreeView when connected. Used in tests.
  * @returns The composed store.
  */
-export async function setupStore(preloadedState?: AppState, sharedTreeConnection?: SharedTreeConnection): Promise<AppStore> {
+export async function setupStore(preloadedState?: AppState, sharedTreeConnection?: SharedTreeConnection<typeof PixelEditorSchema>): Promise<AppStore> {
 	const store = new AppStore(preloadedState, sharedTreeConnection);
 
 	// Don't connect to Fluid if preloadedState is specified

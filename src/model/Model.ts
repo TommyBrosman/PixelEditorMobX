@@ -1,4 +1,4 @@
-import { SharedTree, TreeConfiguration, SchemaFactory, type TreeView } from "fluid-framework";
+import { SharedTree, TreeConfiguration, SchemaFactory, type TreeView, type ImplicitFieldSchema } from "fluid-framework";
 import { TinyliciousClient } from "@fluidframework/tinylicious-client/internal";
 import { boardHeight, boardWidth, initialItemBoard } from "./InitialItemBoard";
 
@@ -128,6 +128,6 @@ export const getKey = (x: number, y: number) => `${x},${y}`;
  * A wrapper for the root TreeView. Can support a disconnected state, needed in this case because we load/create the Shared Tree
  * in a Redux thunk after the application modules have loaded.
  */
-export interface SharedTreeConnection {
-	pixelEditorTreeView: TreeView<typeof PixelEditorSchema> | undefined;
+export interface SharedTreeConnection<TSchema extends ImplicitFieldSchema> {
+	treeView: TreeView<TSchema> | undefined;
 }

@@ -16,9 +16,9 @@ import { StoreContext } from "./store/Hooks";
  * @param sharedTreeConnection The connection injected into the store.
  * @returns The promise to wait on.
  */
-const waitForFluidConnection = async (sharedTreeConnection: SharedTreeConnection) =>
+const waitForFluidConnection = async (sharedTreeConnection: SharedTreeConnection<typeof PixelEditorSchema>) =>
 	waitFor(() => {
-		expect(sharedTreeConnection.pixelEditorTreeView, "Ensure that tinylicious is running.").to.not.be.undefined;
+		expect(sharedTreeConnection.treeView, "Ensure that tinylicious is running.").to.not.be.undefined;
 	});
 
 /**
@@ -27,9 +27,9 @@ const waitForFluidConnection = async (sharedTreeConnection: SharedTreeConnection
  * @param kind Which kind of cell to count.
  * @returns The number of matching cells.
  */
-const countCellsInModel = (sharedTreeConnection: SharedTreeConnection, kind: 'black' | 'white') => {
-	assert(sharedTreeConnection.pixelEditorTreeView !== undefined, "Must be connected to Fluid.");
-	const treeView = sharedTreeConnection.pixelEditorTreeView as TreeView<typeof PixelEditorSchema>;
+const countCellsInModel = (sharedTreeConnection: SharedTreeConnection<typeof PixelEditorSchema>, kind: 'black' | 'white') => {
+	assert(sharedTreeConnection.treeView !== undefined, "Must be connected to Fluid.");
+	const treeView = sharedTreeConnection.treeView as TreeView<typeof PixelEditorSchema>;
 	const cellValues = Array.from(treeView.root.board.values());
 	const kindValue = kind === 'black' ? 0 : 1;
 	return cellValues.reduce((total, current) => total + (current === kindValue ? 1 : 0));
@@ -54,7 +54,7 @@ describe("Tests for Grid", () => {
 	 * Toggles a cell via the UI, then ensures that the visual state is consistent.
 	 */
 	it("Toggles a cell", async (): Promise<void> => {
-		const sharedTreeConnection: SharedTreeConnection = { pixelEditorTreeView: undefined };
+		const sharedTreeConnection: SharedTreeConnection<typeof PixelEditorSchema> = { treeView: undefined };
 		const store = await setupStore(
 			undefined,
 			sharedTreeConnection);
@@ -79,7 +79,7 @@ describe("Tests for Grid", () => {
 	 * Toggles a cell and asserts that the backing tree has changed.
 	 */
 	it("Toggling a cell in the UI sets the corresponding cell in the backing Fluid Tree DDS", async (): Promise<void> => {
-		const sharedTreeConnection: SharedTreeConnection = { pixelEditorTreeView: undefined };
+		const sharedTreeConnection: SharedTreeConnection<typeof PixelEditorSchema> = { treeView: undefined };
 		const store = await setupStore(
 			undefined,
 			sharedTreeConnection);

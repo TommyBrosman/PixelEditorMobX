@@ -1,5 +1,5 @@
-import { SharedTree, TreeConfiguration, SchemaFactory, type TreeView, type ImplicitFieldSchema } from "fluid-framework";
-import { TinyliciousClient } from "@fluidframework/tinylicious-client/internal";
+import { SharedTree, SchemaFactory, type TreeView, type ImplicitFieldSchema, TreeViewConfiguration } from "fluid-framework";
+import { TinyliciousClient } from "@fluidframework/tinylicious-client";
 import { boardHeight, boardWidth, initialItemBoard } from "./InitialItemBoard";
 
 const client = new TinyliciousClient();
@@ -77,24 +77,21 @@ const nestedArrayToMap = (inputBoard: number[][]): Map<string, number> => {
 	return outputBoard;
 }
 
-const treeConfiguration = new TreeConfiguration(
-    PixelEditorSchema,
-    () =>
-        new PixelEditorSchema({
-            board: nestedArrayToMap(initialItemBoard),
-        }),
+const treeConfiguration = new TreeViewConfiguration(
+	{ schema: PixelEditorSchema }
 );
 
 const createNewPixelEditor = async (): Promise<{id: string, pixelEditorTreeView: TreeView<typeof PixelEditorSchema>}> => {
-	const { container } = await client.createContainer(containerSchema);
-	const pixelEditorTreeView = container.initialObjects.pixelEditorTree.schematize(treeConfiguration);
+	const { container } = await client.createContainer(containerSchema, "2");
+	const pixelEditorTreeView = container.initialObjects.pixelEditorTree.viewWith(treeConfiguration);
+	pixelEditorTreeView.initialize(new PixelEditorSchema({ board: nestedArrayToMap(initialItemBoard) }));
 	const id = await container.attach();
 	return { id, pixelEditorTreeView };
 };
 
 const loadExistingPixelEditor = async (id: string): Promise<TreeView<typeof PixelEditorSchema>> => {
-	const { container } = await client.getContainer(id, containerSchema);
-	const pixelEditorTreeView = container.initialObjects.pixelEditorTree.schematize(treeConfiguration);
+	const { container } = await client.getContainer(id, containerSchema, "2");
+	const pixelEditorTreeView = container.initialObjects.pixelEditorTree.viewWith(treeConfiguration);
     return pixelEditorTreeView;
 };
 

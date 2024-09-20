@@ -6,17 +6,17 @@
 		"node": ">=20.0.0"
 	},
 	"dependencies": {
-		"@fluidframework/tinylicious-client": "2.0.0-rc.4.0.4",
-		"@fluidframework/tree": "2.0.0-rc.4.0.4",
+		"@fluidframework/tinylicious-client": "^2.3.0",
+		"@fluidframework/tree": "^2.3.0",
 		"@reduxjs/toolkit": "^2.2.5",
 		"@types/node": "^16.18.97",
 		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
-		"fluid-framework": "^2.0.0-rc.4.0.4",
+		"fluid-framework": "^2.3.0",
 		"mobx-react-lite": "^4.0.7",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
-		"typescript": "~5.3.3",
+		"typescript": "~5.4.5",
 		"web-vitals": "^2.1.4"
 	},
 	"scripts": {

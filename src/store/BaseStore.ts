@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx"
+import { makeObservable, observable, runInAction } from "mobx"
 import type { SharedTreeConnection } from "../model/Model";
 import type { ImplicitFieldSchema, TreeNodeSchema, TreeView } from "fluid-framework";
 
@@ -7,18 +7,15 @@ export class BaseStore<TState extends {}, TSchema extends ImplicitFieldSchema> {
 	private readonly sharedTreeConnection: SharedTreeConnection<TSchema>;
 
 	public constructor(
-		private readonly start: () => Promise<TreeView<TSchema>>,
 		private readonly applyFluidState: (treeView: TreeView<TSchema>, state: TState) => void,
 		preloadedState?: TState,
 		sharedTreeConnection?: SharedTreeConnection<TSchema>) {
-		if (preloadedState !== undefined) {
-			this.state = preloadedState;
-		} else {
-			this.state = <TState>{};
-		}
+		this.state = preloadedState ?? <TState>{};
 
-		// Call before setting the connection so that it doesn't get overwritten by a Proxy object
-		makeAutoObservable(this);
+		// `observable` uses deep equality, so any changes to fields of `this.state` will be observed.
+		makeObservable({
+			state: observable
+		});
 
 		this.sharedTreeConnection = sharedTreeConnection ?? { treeView: undefined };
 	}
@@ -28,9 +25,7 @@ export class BaseStore<TState extends {}, TSchema extends ImplicitFieldSchema> {
 	 * - Join or create a session
 	 * - Wire up events that dispatch reducers when the Shared Tree instance changes (either due to local or remote edits)
 	 */
-	public async connectToFluid(): Promise<void> {
-		const treeView = await this.start();
-
+	public async connectToFluid(treeView: TreeView<TSchema>): Promise<void> {
 		treeView.events.on("rootChanged", () => {
 			runInAction(() => {
 				this.applyFluidState(treeView, this.state);
@@ -59,11 +54,12 @@ export async function setupStore<TState extends {}, TSchema extends TreeNodeSche
 	preloadedState?: TState,
 	sharedTreeConnection?: SharedTreeConnection<TSchema>):
 	Promise<BaseStore<TState, TSchema>> {
-	const store = new BaseStore(start, applyFluidState, preloadedState, sharedTreeConnection);
+	const store = new BaseStore(applyFluidState, preloadedState, sharedTreeConnection);
 
 	// Don't connect to Fluid if preloadedState is specified
 	if (preloadedState === undefined) {
-		await store.connectToFluid();
+		const treeView = await start();
+		await store.connectToFluid(treeView);
 	}
 
 	return store;

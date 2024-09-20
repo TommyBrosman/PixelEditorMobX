@@ -11,6 +11,7 @@ import { setupStore as setupBaseStore } from "./store/BaseStore";
 import { start, type PixelEditorSchema, type SharedTreeConnection } from "./model/Model";
 import type { TreeView } from "fluid-framework";
 import { StoreContext } from "./store/Hooks";
+import type { AppState } from "./State";
 
 /**
  * Wait for the thunk that connects to Fluid.
@@ -103,7 +104,11 @@ describe("Tests for Grid", () => {
 
 	it("Test for generic Store", async(): Promise<void> => {
 		const sharedTreeConnection: SharedTreeConnection<typeof PixelEditorSchema> = { treeView: undefined };
-		const store = setupBaseStore(start, () => {}, undefined, sharedTreeConnection);
+		const applyFluidState = (treeView: TreeView<typeof PixelEditorSchema>, state: AppState): void => {
+			state.itemBoard = treeView.root.getBoardAsNestedArray();
+		};
+
+		const store = setupBaseStore(start, applyFluidState, undefined, sharedTreeConnection);
 		await waitForFluidConnection(sharedTreeConnection);
 		console.log(store);
 	})

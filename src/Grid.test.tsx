@@ -7,7 +7,8 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import Grid from "./Grid";
 import { boardHeight, boardWidth, initialItemBoard } from "./model/InitialItemBoard";
 import { setupStore } from "./store/Store";
-import type { PixelEditorSchema, SharedTreeConnection } from "./model/Model";
+import { setupStore as setupBaseStore } from "./store/BaseStore";
+import { start, type PixelEditorSchema, type SharedTreeConnection } from "./model/Model";
 import type { TreeView } from "fluid-framework";
 import { StoreContext } from "./store/Hooks";
 
@@ -99,4 +100,11 @@ describe("Tests for Grid", () => {
 			expect(whiteCellCountInModelAfter).equals(whiteCellCountInModelBefore + 1);
 		});
 	});
+
+	it("Test for generic Store", async(): Promise<void> => {
+		const sharedTreeConnection: SharedTreeConnection<typeof PixelEditorSchema> = { treeView: undefined };
+		const store = setupBaseStore(start, () => {}, undefined, sharedTreeConnection);
+		await waitForFluidConnection(sharedTreeConnection);
+		console.log(store);
+	})
 });

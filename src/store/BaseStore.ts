@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx"
 import type { SharedTreeConnection } from "../model/Model";
-import { type ImplicitFieldSchema, Tree, type TreeNodeSchema, type TreeView } from "fluid-framework";
+import { type ImplicitFieldSchema, Tree, type TreeNode, type TreeNodeSchema, type TreeView } from "fluid-framework";
 
 export class BaseStore<TState extends {}, TSchema extends ImplicitFieldSchema> {
 	private readonly state: TState;
@@ -30,7 +30,10 @@ export class BaseStore<TState extends {}, TSchema extends ImplicitFieldSchema> {
 	 */
 	public async connectToFluid(): Promise<void> {
 		const treeView = await this.start();
-		Tree.on(treeView.root, "treeChanged", () => {
+
+		// HACK: This type assertion shouldn't be needed
+		const root: TreeNode = <TreeNode>treeView.root;
+		Tree.on(root, "treeChanged", () => {
 			runInAction(() => {
 				this.applyFluidState(treeView, this.state);
 			});
